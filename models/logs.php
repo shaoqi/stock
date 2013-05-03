@@ -39,7 +39,7 @@ class Logs_Model
      */
     public static function total($filter = array()) {
 
-        $sql = "select count(id) as count from `logs`";
+        $sql = "select count(logs.id) as count from `logs` left join `users`  on `users`.`id` = `logs`.`uid`";
         if($filter) {
 
             $sql .= ' where 1=1 ';

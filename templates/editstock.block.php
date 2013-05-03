@@ -38,6 +38,7 @@
                             echo '<div class="clear"></div></div><div class="formRow">';
                     ?>
                     <div class="grid2" style="float:right;text-align: right;">
+                        <input name="id" type="hidden" value="" />
                         <a href="javascript:;" class="buttonS bBlue" id="edit_save"><span style="color: #fff">保存</span></a>
                     </div>
                     <div class="clear"></div>

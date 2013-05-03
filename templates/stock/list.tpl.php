@@ -4,6 +4,11 @@
     $t = get('t');
     $series = Config::get('series');
     $this_series = $series[$t];
+
+    $del_display = '';
+    if(!User_Model::has_auth('stock_dodel_' .$t)) {
+        $del_display = 'display:none';
+    }
 ?>
 <div id="content">
     <div class="contentTop">
@@ -32,20 +37,22 @@
 
         <?php tips(); ?>
 
-        <?php //block('search'.$t); ?>
+        <?php block('search'); ?>
         <div class="widget fluid">
             <div class="whead"><h6><?php echo $this_series['title']; ?>系列</h6><div class="clear"></div></div>
             <div class="hiddenpars">
+                <?php if(User_Model::has_auth('stock_doadd_' .$t)): ?>
                 <div class="cOptions">
                     <a href="javascript:;" class="tOptions" id="add">
                         <span class="icon-plus-2" style="margin:0; padding:0; color: #666"></span>
                     </a>
                 </div>
+                <?php endif;?>
                 <div id="stock_list_table_wrapper" class="dataTables_wrapper" role="grid" style="overflow:auto;">
                     <table  style="width:<?php echo $tdata['width']; ?>px" cellpadding="0" cellspacing="0" border="0" class="dTable checkAll dataTable">
                         <thead>
                             <tr role="row">
-                                <th><input class="checkAll check checkbox_id" type="checkbox" key="stock_list_table_wrapper"></th>
+                                <th style="<?php echo $del_display; ?>"><input class="checkAll check checkbox_id" type="checkbox" key="stock_list_table_wrapper"></th>
                                 <?php 
                                 foreach ($this_series['data'] as $value) {
                                     $width = !empty($value['width']) ? ' style="' .$value['width'] .'px;"' : '';
@@ -62,7 +69,7 @@
                                     echo '<tr class="'.$class.'" sid="'.$value['id'].'">';
                                     if(isset($value['id']) && !empty($value['id'])) {
                                         $id = $value['id'];
-                                        echo '<td><input type="checkbox" class="check" value="'.$id.'" name="ids[]"></td>';
+                                        echo '<td style="' . $del_display .'"><input type="checkbox" class="check" value="'.$id.'" name="ids[]"></td>';
                                         unset($value['id']);
                                     }
 
@@ -72,14 +79,16 @@
                                         if(in_array($k, $this_series['range']) && !in_array($k, $set)) {
                                             $v = '';
                                             $set[] = $k;
-                                            if($value['min_'.$k] != 0 && $value['max_'.$k] != 0) {
+                                            if($value['min_'.$k] != '0' && $value['max_'.$k] != '0') {
                                                 
                                                 $v = $value['min_'.$k] . '-' . $value['max_'.$k];
                                             }
 
                                             echo '<td>' . $v . '</td>';
                                         } else if(!in_array($k, $this_series['range'])) {
-                                            if($v == 0) $v = '';
+                                            if($v == '0') {
+                                                $v = '';
+                                            }
                                             echo '<td>' . $v . '</td>';
                                         }
                                     }
@@ -90,8 +99,10 @@
                     </table>
                 </div>
                 <div class="fg-toolbar tableFooter">
-                    <input class="checkAll check" key="stock_list_table_wrapper" type="checkbox">
-                    <a href="javascript:;" class="buttonH bRed" id="delete">删除</a>
+                    <span style="<?php echo $del_display; ?>">
+                        <input class="checkAll check" key="stock_list_table_wrapper" type="checkbox">
+                    </span>
+                    <a style="<?php echo $del_display; ?>" href="javascript:;" class="buttonH bRed" id="delete">删除</a>
                     <select name="pagesize" id="pagesize">
                         <option value="10" <?php if(get('pagesize') == 10) echo ' selected'; ?>>每页10条</option>
                         <option value="20" <?php if(get('pagesize') == 20) echo ' selected'; ?>>每页20条</option>
@@ -104,7 +115,11 @@
         </div>
 
         <?php block('addstock'); ?>
+        <?php if(User_Model::has_auth('stock_doedit_' .$t)): ?>
         <?php block('editstock'); ?>
+        <?php elseif(User_Model::has_auth('stock_doedit2_' .$t)): ?>
+        <?php block('editstock2'); ?>
+        <?php endif; ?>
         <div id="del_dialog" class="fluid" style="display: none" title="删除库存">
             <p>删除这些库存信息？</p>
         </div>
@@ -125,11 +140,9 @@
             });
         });
 
-
         // 滚动
         var table_wrapper = $('.dataTables_wrapper').width();
         var table_width = $('.dTable').width();
-
         if(table_wrapper > table_width) {
             $('.dTable').css('width', '100%');
         }
@@ -150,7 +163,9 @@
             $('.search').each(function() {
                 var field = $(this).attr('id');
                 var value = $(this).val();
-                param += '&' + field + '=' + value;
+                if(value){
+                    param += '&' + field + '=' + value;
+                }
             });
 
             var href = "<?php echo home_url() . module_url();?>" + param;
@@ -186,6 +201,7 @@
         });
 
         // 编辑库存
+        <?php if(User_Model::has_auth('stock_doedit_' .$t) || User_Model::has_auth('stock_doedit2_' .$t)): ?>
         var edit_dialog = $('#edit_dialog');
         edit_dialog.dialog({
             autoOpen: false,
@@ -223,7 +239,7 @@
             var total = $('#edit_form input[name="total"]').val().trim();
 
             if(total.length > 0) {
-                var ttype = $('#edit_form input[name="total_type"]').val();
+                var ttype = $('#edit_form input[name="operator"]').val();
                 if(ttype == 0) {
                     $.jGrowl('修改库存数量必须选择增加或者减少。');
                     return false;
@@ -238,6 +254,7 @@
                 $('#edit_form').submit();
             }
         });
+        <?php endif; ?>
 
 
         // 删除确认

@@ -45,7 +45,7 @@ class Bin extends base
      * Bin 导入引导页面
      *
      */
-    public function action_center() {
+    public function action_index() {
         Render::with('bin_center')->show();
     }
 

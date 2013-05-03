@@ -18,6 +18,8 @@ return array(
                     array('name' => '数量(K)', 'alias'=>'total', 'width'=>''),
                     array('name' => '仓位', 'alias'=>'postions', 'width'=>''),
                     ),
+           'serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'bright'=>false,'ctemp'=>false,'voltage'=>false),
+           'info_serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'bright'=>false,'ctemp'=>false,'voltage'=>false),
             ),
     'zs' => array(
         'title' => '指示',
@@ -35,6 +37,8 @@ return array(
                     array('name' => '数量(K)', 'alias'=>'total', 'width'=>''),
                     array('name' => '仓位', 'alias'=>'postions', 'width'=>''),
                     ),
+            'serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'bright'=>false,'tone'=>false,'voltage'=>false),
+            'info_serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'bright'=>false,'tone'=>false,'voltage'=>false),
             ),
     'xs' => array(
         'title' => '显示',
@@ -59,7 +63,8 @@ return array(
                     array('name' => '数量(K)', 'alias'=>'total', 'width'=>''),
                     array('name' => '仓位', 'alias'=>'postions', 'width'=>''),
                     ),
-
+        'serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE),
+        'info_serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'r_wavelength'=>false,'r_bright'=>false,'r_voltage'=>false,),
             ),
     'bg' => array(
         'title' => '背光',
@@ -79,5 +84,7 @@ return array(
                     array('name' => '数量(K)', 'alias'=>'total', 'width'=>''),
                     array('name' => '仓位', 'alias'=>'postions', 'width'=>''),
                     ),
+            'serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'bright'=>false,'ctemp'=>false,'voltage'=>false),
+            'info_serach' => array('code'=>RIGHT_LIKE,'pno'=>RIGHT_LIKE,'model'=>RIGHT_LIKE,'bright'=>false,'ctemp'=>false,'voltage'=>false),
             ),
         );

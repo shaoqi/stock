@@ -54,29 +54,21 @@ class Stock extends base
             $table_width += intval($s['width']);
         }
 
-        // 筛选
-        $filter = array();
-        foreach ($fields as $key => $value) {
-            if(get($value)){
-                $filter[$value]= trim(get($value));
-            }
-        }
 
         $pagesize = get('pagesize') ? get('pagesize') : PAGESIZE; 
 
-        $total = Stock_Model::total($filter);
+        $total = Stock_Model::total($this_series);
 
         $pagination = new Pagination();
         $page = $pagination->get_page();
         $pagination->records($total);
         $pagination->records_per_page($pagesize);
-        $list = Stock_Model::filter($fields, $filter, $page, $pagesize);
+        $list = Stock_Model::filter($fields, $this_series, $page, $pagesize);
 
         $data['pagination'] = $pagination;
         $data['list'] = $list;
         $data['width'] = $table_width;
         $data['range'] = json_encode($this_series['range']);
-
 
         Render::with('stock_list', $data)->show();
     }
@@ -140,6 +132,13 @@ class Stock extends base
     }
 
     /**
+     * 部分编辑
+     */
+    public function action_doEdit2() {
+        $this->action_doEdit();
+    }
+
+    /**
      * 添加操作
      */
     public function action_doAdd() {
@@ -150,6 +149,7 @@ class Stock extends base
         $data               = $request;
         $data['updated_at'] = NOW;
         $data['created_at'] = NOW;
+
 
         // 删除不必要数据
         unset($data['m'], $data['a'], $data['t'], $data['operator']);
@@ -165,6 +165,14 @@ class Stock extends base
             $_SESSION['tips_error'] = $error;
         }
 
+        if(isset($_SESSION['tips_error'])) {
+            $log_data = '添加库存失败, 批号：';
+        } else {
+            $log_data = '添加库存成功, 批号：';
+        }
+
+        logs('stock', $log_data, $data['pno']);
+
         header('Location:' . home_url() . '?m=stock&a=list&t=' . $t);
     }
 
@@ -173,12 +181,16 @@ class Stock extends base
      */
     public function action_doDel() {
         $ids = get('ids');
+        $extra = '失败';
         if(Stock_Model::delete($ids)) {
             $_SESSION['tips_success'] = '删除成功。';
+            $extra = '成功';
             echo 1;
         } else {
             error('错误', '删除失败。');
         }
+
+        logs('stock', "删除库存数据ID：" . implode(', ', $ids), $extra);
     }
 
     /**
@@ -196,10 +208,10 @@ class Stock extends base
         foreach($info as $key => $value) {
             $k = trim(trim($key, 'min_'), 'max_');
             if(in_array($k, $this_series['range']) && !isset($info[$k])) {
-                if(($info['min_'.$k] != 0) && ($info['max_'.$k] != 0))
+                if(($info['min_'.$k] != '0') && ($info['max_'.$k] != '0'))
                     $info[$k] = $info['min_'.$k] . '-' . $info['max_' . $k];
             } else {
-                if($value == 0)
+                if($value == '0')
                     unset($info[$key]);
             }
         }
